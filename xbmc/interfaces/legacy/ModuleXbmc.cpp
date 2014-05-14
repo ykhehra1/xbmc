@@ -232,7 +232,7 @@ namespace XBMCAddon
 
     String getIPAddress()
     {
-      XBMC_TRACE;i
+      XBMC_TRACE;
       return g_application.getNetworkManager().GetDefaultConnectionAddress().c_str();
     }
 
