@@ -23,7 +23,6 @@
 #if (defined HAVE_CONFIG_H) && (!defined TARGET_WINDOWS)
   #include "config.h"
 #endif
-#include "network/Network.h"
 
 #include "ModuleXbmc.h"
 
@@ -233,14 +232,8 @@ namespace XBMCAddon
 
     String getIPAddress()
     {
-      XBMC_TRACE;
-      char cTitleIP[32];
-      sprintf(cTitleIP, "127.0.0.1");
-      CNetworkInterface* iface = g_application.getNetwork().GetFirstConnectedInterface();
-      if (iface)
-        return iface->GetCurrentIPAddress();
-
-      return cTitleIP;
+      XBMC_TRACE;i
+      return g_application.getNetworkManager().GetDefaultConnectionAddress().c_str();
     }
 
     long getDVDState()

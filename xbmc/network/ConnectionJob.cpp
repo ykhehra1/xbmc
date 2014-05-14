@@ -27,7 +27,7 @@
 #include "guilib/GUIKeyboardFactory.h"
 #include "guilib/GUIWindowManager.h"
 #include "security/KeyringManager.h"
-#include "settings/GUISettings.h"
+#include "settings/Settings.h"
 #include "settings/AdvancedSettings.h"
 
 CConnectionJob::CConnectionJob(CConnectionPtr connection, const CIPConfig &ipconfig, CKeyringManager *keyringManager)
@@ -63,12 +63,12 @@ bool CConnectionJob::DoWork()
 void CConnectionJob::InvalidatePassphrase(const std::string &uuid)
 {
   m_keyringManager->EraseSecret("network", uuid);
-  g_guiSettings.SetString("network.passphrase", "");
+  CSettings::Get().SetString("network.passphrase", "");
 }
 
 bool CConnectionJob::GetPassphrase(const std::string &uuid, std::string &passphrase)
 {
-  passphrase = g_guiSettings.GetString("network.passphrase");
+  passphrase = CSettings::Get().GetString("network.passphrase");
   if (passphrase.size() > 0)
     return true;
   /*
@@ -98,5 +98,5 @@ void CConnectionJob::StorePassphrase(const std::string &uuid, const std::string 
 {
   m_keyringManager->StoreSecret("network", uuid, CVariant(passphrase));
   // hack until we get keyring storage working
-  g_guiSettings.SetString("network.passphrase", passphrase.c_str());
+  CSettings::Get().SetString("network.passphrase", passphrase.c_str());
 }

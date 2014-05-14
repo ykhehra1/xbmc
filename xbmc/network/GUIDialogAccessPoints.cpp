@@ -26,6 +26,7 @@
 #include "FileItem.h"
 #include "guilib/LocalizeStrings.h"
 #include "guilib/GUIWindowManager.h"
+#include "guilib/Key.h"
 #include "utils/JobManager.h"
 #include "ConnectionJob.h"
 

@@ -384,6 +384,8 @@ void CAdvancedSettings::Initialize()
   m_guiVisualizeDirtyRegions = false;
   m_guiAlgorithmDirtyRegions = 3;
   m_guiDirtyRegionNoFlipTimeout = 0;
+  m_enableNetworkManager  = false;
+  m_showNetworkPassPhrase = true;
   m_logEnableAirtunes = false;
   m_airTunesPort = 36666;
   m_airPlayPort = 36667;
@@ -852,6 +854,10 @@ void CAdvancedSettings::ParseSettingsFile(const CStdString &file)
 
   XMLUtils::GetString(pRootElement, "cddbaddress", m_cddbAddress);
 
+  //network manager
+  XMLUtils::GetBoolean(pRootElement, "enablenetworkmanager" , m_enableNetworkManager);
+  XMLUtils::GetBoolean(pRootElement, "shownetworkpassphrase", m_showNetworkPassPhrase);
+
   //airtunes + airplay
   XMLUtils::GetBoolean(pRootElement, "enableairtunesdebuglog", m_logEnableAirtunes);
   XMLUtils::GetInt(pRootElement,     "airtunesport", m_airTunesPort);
@@ -1033,6 +1039,26 @@ void CAdvancedSettings::ParseSettingsFile(const CStdString &file)
 
       // get next one
       pSubstitute = pSubstitute->NextSiblingElement("substitute");
+    }
+  }
+
+  TiXmlElement* pHideSettings = pRootElement->FirstChildElement("hidesettings");
+  if (pHideSettings)
+  {
+    m_settingsHidden.clear();
+    CLog::Log(LOGDEBUG,"Configuring hidden settings");
+    TiXmlNode* pSetting = pHideSettings->FirstChildElement("setting");
+    CStdString hiddenSetting;
+    while (pSetting)
+    {
+      hiddenSetting = pSetting->FirstChild()->Value();
+      if (!hiddenSetting.empty())
+      {
+        CLog::Log(LOGNOTICE,"Hiding:  [%s]", hiddenSetting.c_str());
+        m_settingsHidden.push_back(hiddenSetting);
+      }
+      // get next one
+      pSetting = pSetting->NextSiblingElement("setting");
     }
   }
 

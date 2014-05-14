@@ -1122,6 +1122,15 @@ void CSettings::InitializeISettingCallbacks()
   settingSet.insert("services.escontinuousdelay");
   settingSet.insert("smb.winsserver");
   settingSet.insert("smb.workgroup");
+  settingSet.insert("network.connection");
+  settingSet.insert("network.method");
+  settingSet.insert("network.address");
+  settingSet.insert("network.netmask");
+  settingSet.insert("network.gateway");
+  settingSet.insert("network.nameserver");
+  settingSet.insert("network.apply");
+  settingSet.insert("network.essid");
+  settingSet.insert("network.passphrase");
   m_settingsManager->RegisterCallback(&CNetworkServices::Get(), settingSet);
 
   settingSet.clear();

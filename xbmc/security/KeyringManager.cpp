@@ -22,6 +22,7 @@
 #include "KeyringManager.h"
 #include "settings/Settings.h"
 #include "XMLKeyringManager.h"
+#include "profiles/ProfilesManager.h"
 
 using namespace std;
 
@@ -40,7 +41,7 @@ void CKeyringManager::Initialize()
   // TODO Platform specific implementation
 
   if (m_persistantKeyringManager == NULL)
-    m_persistantKeyringManager = new CXMLKeyringManager(g_settings.GetUserDataItem("secrets.xml").c_str());
+    m_persistantKeyringManager = new CXMLKeyringManager(CProfilesManager::Get().GetUserDataItem("secrets.xml").c_str());
 }
 
 bool CKeyringManager::FindSecret(const string &keyring, const string &key, CVariant &secret)

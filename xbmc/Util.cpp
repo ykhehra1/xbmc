@@ -17,7 +17,6 @@
  *  <http://www.gnu.org/licenses/>.
  *
  */
-#include "network/Network.h"
 #include "threads/SystemClock.h"
 #include "system.h"
 #if defined(TARGET_DARWIN)
@@ -1885,7 +1884,7 @@ void CUtil::ScanForExternalSubtitles(const CStdString& strMovie, std::vector<CSt
   
   if (!CMediaSettings::Get().GetAdditionalSubtitleDirectoryChecked() && !CSettings::Get().GetString("subtitles.custompath").empty()) // to avoid checking non-existent directories (network) every time..
   {
-    if (!g_application.getNetwork().IsAvailable() && !URIUtils::IsHD(CSettings::Get().GetString("subtitles.custompath")))
+    if (!g_application.getNetworkManager().IsAvailable() && !URIUtils::IsHD(CSettings::Get().GetString("subtitles.custompath")))
     {
       CLog::Log(LOGINFO,"CUtil::CacheSubtitles: disabling alternate subtitle directory for this session, it's nonaccessible");
       CMediaSettings::Get().SetAdditionalSubtitleDirectoryChecked(-1); // disabled

@@ -24,7 +24,6 @@
 #include <arpa/inet.h>
 
 #include "system.h"
-#include "network/Network.h"
 #include "Application.h"
 #include "DNSNameCache.h"
 #include "dialogs/GUIDialogProgress.h"
@@ -106,14 +105,14 @@ bool CMACDiscoveryJob::DoWork()
     CLog::Log(LOGERROR, "%s - can't determine ip of '%s'", __FUNCTION__, m_host.c_str());
     return false;
   }
-
+/*
   vector<CNetworkInterface*>& ifaces = g_application.getNetwork().GetInterfaceList();
   for (vector<CNetworkInterface*>::const_iterator it = ifaces.begin(); it != ifaces.end(); ++it)
   {
     if ((*it)->GetHostMacAddress(ipAddress, m_macAddres))
       return true;
   }
-
+*/
   return false;
 }
 

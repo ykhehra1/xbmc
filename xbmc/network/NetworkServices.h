@@ -42,6 +42,7 @@ public:
   
   virtual bool OnSettingChanging(const CSetting *setting);
   virtual void OnSettingChanged(const CSetting *setting);
+  virtual void OnSettingAction(const CSetting *setting);
 
   void Start();
   void Stop(bool bWait);
@@ -91,7 +92,9 @@ private:
   CNetworkServices(const CNetworkServices&);
   CNetworkServices const& operator=(CNetworkServices const&);
   virtual ~CNetworkServices();
-
+  
+  void FillInNetworkConnection();
+  
   bool ValidatePort(int port);
 
 #ifdef HAS_WEB_SERVER

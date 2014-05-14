@@ -27,7 +27,7 @@
 #include "guilib/LocalizeStrings.h"
 #include "network/NetworkUtils.h"
 #include "settings/AdvancedSettings.h"
-#include "settings/GUISettings.h"
+#include "settings/Settings.h"
 #include "threads/Thread.h"
 #include "utils/log.h"
 
@@ -228,14 +228,14 @@ void CPosixNetworkManager::RestoreSavedConnection()
 {
   CLog::Log(LOGDEBUG, "NetworkManager: Restoring saved connection");
 
-  std::string saved_name       = g_guiSettings.GetString("network.essid");
+  std::string saved_name       = CSettings::Get().GetString("network.essid");
 
   CIPConfig saved_ipconfig;
-  saved_ipconfig.m_method      = (IPConfigMethod)g_guiSettings.GetInt("network.method");
-  saved_ipconfig.m_address     = g_guiSettings.GetString("network.address");
-  saved_ipconfig.m_netmask     = g_guiSettings.GetString("network.netmask");
-  saved_ipconfig.m_gateway     = g_guiSettings.GetString("network.gateway");
-  saved_ipconfig.m_nameserver  = g_guiSettings.GetString("network.nameserver");
+  saved_ipconfig.m_method      = (IPConfigMethod)CSettings::Get().GetInt("network.method");
+  saved_ipconfig.m_address     = CSettings::Get().GetString("network.address");
+  saved_ipconfig.m_netmask     = CSettings::Get().GetString("network.netmask");
+  saved_ipconfig.m_gateway     = CSettings::Get().GetString("network.gateway");
+  saved_ipconfig.m_nameserver  = CSettings::Get().GetString("network.nameserver");
 
   for (size_t i = 0; i < m_connections.size(); i++)
   {

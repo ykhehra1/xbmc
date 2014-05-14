@@ -26,7 +26,7 @@
 #include "utils/log.h"
 
 // temp until keychainManager is working
-#include "settings/GUISettings.h"
+#include "settings/Settings.h"
 
 #include <fcntl.h>
 #include <sys/ioctl.h>
@@ -285,13 +285,13 @@ std::string CPosixConnection::GetNameServer() const
 std::string CPosixConnection::GetMacAddress() const
 {
   CStdString result;
-  result.Format("00:00:00:00:00:00");
+  result = StringUtils::Format("00:00:00:00:00:00");
 
   struct ifreq ifr;
   strcpy(ifr.ifr_name, m_interface.c_str());
   if (ioctl(m_socket, SIOCGIFHWADDR, &ifr) >= 0)
   {
-    result.Format("%02X:%02X:%02X:%02X:%02X:%02X",
+    result = StringUtils::Format("%02X:%02X:%02X:%02X:%02X:%02X",
       ifr.ifr_hwaddr.sa_data[0], ifr.ifr_hwaddr.sa_data[1],
       ifr.ifr_hwaddr.sa_data[2], ifr.ifr_hwaddr.sa_data[3],
       ifr.ifr_hwaddr.sa_data[4], ifr.ifr_hwaddr.sa_data[5]);
@@ -457,7 +457,7 @@ bool CPosixConnection::Connect(IPassphraseStorage *storage, const CIPConfig &ipc
   }
   else
   {
-    passphrase = g_guiSettings.GetString("network.passphrase");
+    passphrase = CSettings::Get().GetString("network.passphrase");
     /*
     CVariant secret;
     if (m_keyringManager->FindSecret("network", m_essid, secret) && secret.isString())
@@ -471,7 +471,7 @@ bool CPosixConnection::Connect(IPassphraseStorage *storage, const CIPConfig &ipc
   if (DoConnection(ipconfig, passphrase) && GetState() == NETWORK_CONNECTION_STATE_CONNECTED)
   {
     // if we connect, save out the essid
-    g_guiSettings.SetString("network.essid", m_essid.c_str());
+    CSettings::Get().SetString("network.essid", m_essid.c_str());
     // quick update of some internal vars
     m_method  = ipconfig.m_method;
     m_address = ipconfig.m_address;

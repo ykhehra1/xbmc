@@ -26,12 +26,12 @@
 #include "dialogs/GUIDialogKaiToast.h"
 #include "guilib/LocalizeStrings.h"
 #include "guilib/GUIWindowManager.h"
-#include "libscrobbler/lastfmscrobbler.h"
-#include "libscrobbler/librefmscrobbler.h"
+#include "guilib/Key.h"
 #include "linux/ConnmanNetworkManager.h"
 #include "linux/PosixNetworkManager.h"
 #include "windows/WinNetworkManager.h"
 #include "utils/log.h"
+#include "utils/RssManager.h"
 #include "utils/RssReader.h"
 
 //-----------------------------------------------------------------------
@@ -268,32 +268,27 @@ void CNetworkManager::StartServices()
   g_application.StartTimeServer();
 #endif
 #ifdef HAS_WEB_SERVER
-  if (!g_application.StartWebServer())
+  if (!g_application.StartServer(CApplication::ES_WEBSERVER, true, true))
     CGUIDialogKaiToast::QueueNotification("DefaultIconWarning.png", g_localizeStrings.Get(33101), g_localizeStrings.Get(33100));
 #endif
 #ifdef HAS_UPNP
-  g_application.StartUPnP();
+  g_application.StartServer(CApplication::ES_UPNPSERVER, true, true);
 #endif
 #ifdef HAS_EVENT_SERVER
-  if (!g_application.StartEventServer())
+  if (!g_application.StartServer(CApplication::ES_EVENTSERVER, true, true))
     CGUIDialogKaiToast::QueueNotification("DefaultIconWarning.png", g_localizeStrings.Get(33102), g_localizeStrings.Get(33100));
 #endif
-#ifdef HAS_DBUS_SERVER
-  g_application.StartDbusServer();
-#endif
 #ifdef HAS_JSONRPC
-  if (!g_application.StartJSONRPCServer())
+  if (!g_application.StartServer(CApplication::ES_JSONRPCSERVER, true, true))
     CGUIDialogKaiToast::QueueNotification("DefaultIconWarning.png", g_localizeStrings.Get(33103), g_localizeStrings.Get(33100));
 #endif
 #ifdef HAS_ZEROCONF
-  g_application.StartZeroconf();
+  g_application.StartServer(CApplication::ES_ZEROCONF, true, true); 
 #endif
 #ifdef HAS_AIRPLAY
-  g_application.StartAirplayServer();
+  g_application.StartServer(CApplication::ES_AIRPLAYSERVER, true, true); 
 #endif
-  CLastfmScrobbler::GetInstance()->Init();
-  CLibrefmScrobbler::GetInstance()->Init();
-  g_rssManager.Start();
+  CRssManager::Get().Start();
 }
 
 void CNetworkManager::StopServices()
@@ -312,32 +307,27 @@ void CNetworkManager::StopServices(bool wait)
     g_application.StopTimeServer();
 #endif
 #ifdef HAS_UPNP
-    g_application.StopUPnP(wait);
+    g_application.StartServer(CApplication::ES_UPNPSERVER, false, wait);
 #endif
 #ifdef HAS_ZEROCONF
-    g_application.StopZeroconf();
+    g_application.StartServer(CApplication::ES_ZEROCONF, false, wait);
 #endif
 #ifdef HAS_WEB_SERVER
-    g_application.StopWebServer();
+    g_application.StartServer(CApplication::ES_WEBSERVER, false, wait);
 #endif    
-    CLastfmScrobbler::GetInstance()->Term();
-    CLibrefmScrobbler::GetInstance()->Term();
     // smb.Deinit(); if any file is open over samba this will break.
 
-    g_rssManager.Stop();
+    CRssManager::Get().Stop();
   }
 
 #ifdef HAS_EVENT_SERVER
-  g_application.StopEventServer(wait, false);
-#endif
-#ifdef HAS_DBUS_SERVER
-  g_application.StopDbusServer(wait);
+  g_application.StartServer(CApplication::ES_EVENTSERVER, false, wait);
 #endif
 #ifdef HAS_JSONRPC
-  g_application.StopJSONRPCServer(wait);
+  g_application.StartServer(CApplication::ES_JSONRPCSERVER, false, wait);
 #endif
 #if defined(HAS_AIRPLAY) || defined(HAS_AIRTUNES)
-  g_application.StopAirplayServer(wait);
+  g_application.StartServer(CApplication::ES_AIRPLAYSERVER, false, wait);
 #endif
 }
 

@@ -28,7 +28,6 @@
 #include "filesystem/Directory.h"
 #include "utils/URIUtils.h"
 #include "FileItem.h"
-#include "network/Network.h"
 #include "utils/CharsetConverter.h"
 #include "utils/StringUtils.h"
 #include "cores/dvdplayer/DVDCodecs/DVDCodecs.h"
@@ -163,7 +162,7 @@ void CAddonCallbacksAddon::QueueNotification(void *addonData, const queue_msg_t 
 
 bool CAddonCallbacksAddon::WakeOnLan(const char *mac)
 {
-  return g_application.getNetwork().WakeOnLan(mac);
+  return g_application.getNetworkManager().WakeOnLan(mac);
 }
 
 bool CAddonCallbacksAddon::GetAddonSetting(void *addonData, const char *strSettingName, void *settingValue)

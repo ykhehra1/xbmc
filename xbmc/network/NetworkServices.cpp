@@ -29,7 +29,11 @@
 #include "dialogs/GUIDialogOK.h"
 #include "dialogs/GUIDialogYesNo.h"
 #include "guilib/LocalizeStrings.h"
-#include "network/Network.h"
+#include "guilib/GUIButtonControl.h"
+#include "guilib/GUIEditControl.h"
+#include "guilib/GUISpinControlEx.h"
+
+#include "GUIDialogAccessPoints.h"
 
 #ifdef HAS_AIRPLAY
 #include "network/AirPlayServer.h"
@@ -400,6 +404,87 @@ void CNetworkServices::OnSettingChanged(const CSetting *setting)
   }
 }
 
+void CNetworkServices::OnSettingAction(const CSetting *setting)
+{
+  if (setting == NULL)
+    return;
+
+  const std::string &settingId = setting->GetId();
+  if (settingId == "network.connection")
+  {
+    CGUIDialogAccessPoints *access_points = (CGUIDialogAccessPoints*)g_windowManager.GetWindow(WINDOW_DIALOG_ACCESS_POINTS);
+    if (access_points)
+    {
+      access_points->DoModal();
+      FillInNetworkConnection();
+
+      bool canManage = g_application.getNetworkManager().CanManageConnections();
+//      CGUIButtonControl *pControl = (CGUIButtonControl*)CSettings::Get().GetSetting("network.connection")->GetControl();
+//      pControl->SetEnabled(canManage);
+
+      CLog::Log(LOGDEBUG, "CGUIWindowSettingsCategory::UpdateSettings:network.connection canManage(%d)", canManage);
+      if (canManage)
+      {
+        CStdString connection_name;
+        connection_name = g_application.getNetworkManager().GetDefaultConnectionName();
+        CSettings::Get().SetString("network.connection", connection_name);
+
+        FillInNetworkConnection();
+      }
+      else
+      {
+        // <string id="13296">Connected</string>
+        CSettings::Get().SetString("network.connection", g_localizeStrings.Get(13296));
+      }
+      
+//      UpdateSettings();
+    }  
+  }
+  else if (settingId == "network.apply")
+  {
+    CGUIDialogAccessPoints *access_points = (CGUIDialogAccessPoints*)g_windowManager.GetWindow(WINDOW_DIALOG_ACCESS_POINTS);
+    if (access_points)
+    {
+      // fetch the connection name.
+      std::string connection_name(CSettings::Get().GetString("network.connection"));
+
+      CIPConfig ipconfig;
+      // fetch the current method
+      ipconfig.m_method = (IPConfigMethod)CSettings::Get().GetInt("network.method");
+      // fetch the current ip info
+      ipconfig.m_address = CSettings::Get().GetString("network.address");
+      ipconfig.m_netmask = CSettings::Get().GetString("network.netmask");
+      ipconfig.m_gateway = CSettings::Get().GetString("network.gateway");
+      ipconfig.m_nameserver = CSettings::Get().GetString("network.nameserver");
+      // pass the connection config as an encoded param string
+
+      access_points->DoModal(WINDOW_DIALOG_ACCESS_POINTS, EncodeAccessPointParam(connection_name, ipconfig));
+      FillInNetworkConnection();
+
+      bool canManage = g_application.getNetworkManager().CanManageConnections();
+//      CGUIButtonControl *pControl = (CGUIButtonControl*)CSettings::Get().GetSetting("network.connection")->GetControl();
+//      pControl->SetEnabled(canManage);
+
+      CLog::Log(LOGDEBUG, "CGUIWindowSettingsCategory::UpdateSettings:network.connection canManage(%d)", canManage);
+      if (canManage)
+      {
+        CStdString connection_name;
+        connection_name = g_application.getNetworkManager().GetDefaultConnectionName();
+        CSettings::Get().SetString("network.connection", connection_name);
+
+        FillInNetworkConnection();
+      }
+      else
+      {
+        // <string id="13296">Connected</string>
+        CSettings::Get().SetString("network.connection", g_localizeStrings.Get(13296));
+      }
+
+//      UpdateSettings();
+    }
+  }
+}
+
 void CNetworkServices::Start()
 {
   StartZeroconf();
@@ -438,7 +523,7 @@ void CNetworkServices::Stop(bool bWait)
 bool CNetworkServices::StartWebserver()
 {
 #ifdef HAS_WEB_SERVER
-  if (!g_application.getNetwork().IsAvailable())
+  if (!g_application.getNetworkManager().IsAvailable())
     return false;
 
   if (!CSettings::Get().GetBool("services.webserver"))
@@ -513,7 +598,7 @@ bool CNetworkServices::StopWebserver()
 bool CNetworkServices::StartAirPlayServer()
 {
 #ifdef HAS_AIRPLAY
-  if (!g_application.getNetwork().IsAvailable() || !CSettings::Get().GetBool("services.airplay"))
+  if (!g_application.getNetworkManager().IsAvailable() || !CSettings::Get().GetBool("services.airplay"))
     return false;
 
   if (IsAirPlayServerRunning())
@@ -528,8 +613,7 @@ bool CNetworkServices::StartAirPlayServer()
   
 #ifdef HAS_ZEROCONF
   std::vector<std::pair<std::string, std::string> > txt;
-  CNetworkInterface* iface = g_application.getNetwork().GetFirstConnectedInterface();
-  txt.push_back(make_pair("deviceid", iface != NULL ? iface->GetMacAddress() : "FF:FF:FF:FF:FF:F2"));
+  txt.push_back(make_pair("deviceid", g_application.getNetworkManager().GetDefaultConnectionMacAddress().c_str()));
   txt.push_back(make_pair("features", "0x77"));
   txt.push_back(make_pair("model", "Xbmc,1"));
   txt.push_back(make_pair("srcvers", AIRPLAY_SERVER_VERSION_STR));
@@ -569,7 +653,7 @@ bool CNetworkServices::StopAirPlayServer(bool bWait)
 bool CNetworkServices::StartAirTunesServer()
 {
 #ifdef HAS_AIRTUNES
-  if (!g_application.getNetwork().IsAvailable() || !CSettings::Get().GetBool("services.airplay"))
+  if (!g_application.getNetworkManager().IsAvailable() || !CSettings::Get().GetBool("services.airplay"))
     return false;
 
   if (IsAirTunesServerRunning())
@@ -934,6 +1018,36 @@ bool CNetworkServices::StopZeroconf()
   return true;
 #endif // HAS_ZEROCONF
   return false;
+}
+
+void CNetworkServices::FillInNetworkConnection()
+{
+  CLog::Log(LOGDEBUG, "CGUIWindowSettingsCategory::FillInNetworkConnection1");
+  if (!CSettings::Get().GetSetting("network.connection"))
+    return;
+
+  CLog::Log(LOGDEBUG, "CGUIWindowSettingsCategory::FillInNetworkConnection2");
+  // run the net pump to clear out any stale info,
+  // the water gets mighty dirty when the pump
+  // only runs every 500ms.
+  for (size_t i = 0; i < 20; i++)
+    g_application.getNetworkManager().PumpNetworkEvents();
+
+  CStdString     name       = g_application.getNetworkManager().GetDefaultConnectionName();
+  IPConfigMethod method     = g_application.getNetworkManager().GetDefaultConnectionMethod();
+  CStdString     address    = g_application.getNetworkManager().GetDefaultConnectionAddress();
+  CStdString     netmask    = g_application.getNetworkManager().GetDefaultConnectionNetmask();
+  CStdString     gateway    = g_application.getNetworkManager().GetDefaultConnectionGateway();
+  CStdString     nameserver = g_application.getNetworkManager().GetDefaultConnectionNameServer();
+
+  // set method (dhcp or static)
+  CSettings::Get().SetInt("network.method", method);
+
+  // set network ip information
+  CSettings::Get().SetString("network.address", address);
+  CSettings::Get().SetString("network.netmask", netmask);
+  CSettings::Get().SetString("network.gateway", gateway);
+  CSettings::Get().SetString("network.nameserver", nameserver);
 }
 
 bool CNetworkServices::ValidatePort(int port)
