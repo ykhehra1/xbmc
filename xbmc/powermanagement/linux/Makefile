@@ -2,7 +2,8 @@ SRCS=ConsoleDeviceKitPowerSyscall.cpp \
      ConsoleUPowerSyscall.cpp \
      HALPowerSyscall.cpp \
      UPowerSyscall.cpp \
-     LogindUPowerSyscall.cpp
+     LogindUPowerSyscall.cpp \
+     AMLPowerSyscall.cpp
 
 LIB=powermanagement_linux.a
 

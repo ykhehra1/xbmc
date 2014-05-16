@@ -474,7 +474,7 @@ static int video_get_buffer(AVCodecContext *s, AVFrame *pic)
 
             buf->linesize[i] = picture.linesize[i];
 
-            buf->base[i] = av_malloc(size[i] + 16); //FIXME 16
+            buf->base[i] = av_malloc(size[i] + 16 + STRIDE_ALIGN - 1); //FIXME 16
             if (buf->base[i] == NULL)
                 return AVERROR(ENOMEM);
 
@@ -1938,7 +1938,7 @@ static int recode_subtitle(AVCodecContext *avctx,
         goto end;
     }
     outpkt->size -= outl;
-    outpkt->data[outpkt->size - 1] = '\0';
+    memset(outpkt->data + outpkt->size, 0, outl);
 
 end:
     if (cd != (iconv_t)-1)
