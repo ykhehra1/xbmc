@@ -471,6 +471,10 @@ bool CPosixConnection::Connect(IPassphraseStorage *storage, const CIPConfig &ipc
   if (DoConnection(ipconfig, passphrase) && GetState() == NETWORK_CONNECTION_STATE_CONNECTED)
   {
     // if we connect, save out the essid
+//    if (m_essid.c_str() != NULL)
+//      CLog::Log(LOGDEBUG, "PosixConnection::Connect - network.essid(%s)", m_essid.c_str());
+//    else
+//      CLog::Log(LOGDEBUG, "PosixConnection::Connect - network.essid(null)");
     CSettings::Get().SetString("network.essid", m_essid.c_str());
     // quick update of some internal vars
     m_method  = ipconfig.m_method;

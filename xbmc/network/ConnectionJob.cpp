@@ -63,6 +63,7 @@ bool CConnectionJob::DoWork()
 void CConnectionJob::InvalidatePassphrase(const std::string &uuid)
 {
   m_keyringManager->EraseSecret("network", uuid);
+  CLog::Log(LOGDEBUG, "CConnectionJob::InvalidatePassphrase - clearing network.passphrase");
   CSettings::Get().SetString("network.passphrase", "");
 }
 
@@ -98,5 +99,10 @@ void CConnectionJob::StorePassphrase(const std::string &uuid, const std::string 
 {
   m_keyringManager->StoreSecret("network", uuid, CVariant(passphrase));
   // hack until we get keyring storage working
+//  if (passphrase.c_str() != NULL)
+//	  CLog::Log(LOGDEBUG, "CConnectionJob::StorePassphrase - network.passphrase(%s)", passphrase.c_str());
+//  else  
+//	  CLog::Log(LOGDEBUG, "CConnectionJob::StorePassphrase - network.passphrase(null)");
+  
   CSettings::Get().SetString("network.passphrase", passphrase.c_str());
 }

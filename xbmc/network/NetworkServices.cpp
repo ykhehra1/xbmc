@@ -417,36 +417,15 @@ void CNetworkServices::OnSettingAction(const CSetting *setting)
     {
       access_points->DoModal();
       FillInNetworkConnection();
-
-      bool canManage = g_application.getNetworkManager().CanManageConnections();
-//      CGUIButtonControl *pControl = (CGUIButtonControl*)CSettings::Get().GetSetting("network.connection")->GetControl();
-//      pControl->SetEnabled(canManage);
-
-      CLog::Log(LOGDEBUG, "CGUIWindowSettingsCategory::UpdateSettings:network.connection canManage(%d)", canManage);
-      if (canManage)
-      {
-        CStdString connection_name;
-        connection_name = g_application.getNetworkManager().GetDefaultConnectionName();
-        CSettings::Get().SetString("network.connection", connection_name);
-
-        FillInNetworkConnection();
-      }
-      else
-      {
-        // <string id="13296">Connected</string>
-        CSettings::Get().SetString("network.connection", g_localizeStrings.Get(13296));
-      }
-      
-//      UpdateSettings();
-    }  
+    }
   }
   else if (settingId == "network.apply")
   {
     CGUIDialogAccessPoints *access_points = (CGUIDialogAccessPoints*)g_windowManager.GetWindow(WINDOW_DIALOG_ACCESS_POINTS);
     if (access_points)
     {
-      // fetch the connection name.
-      std::string connection_name(CSettings::Get().GetString("network.connection"));
+      // fetch the essid.
+      std::string essid(CSettings::Get().GetString("network.essid"));
 
       CIPConfig ipconfig;
       // fetch the current method
@@ -458,29 +437,8 @@ void CNetworkServices::OnSettingAction(const CSetting *setting)
       ipconfig.m_nameserver = CSettings::Get().GetString("network.nameserver");
       // pass the connection config as an encoded param string
 
-      access_points->DoModal(WINDOW_DIALOG_ACCESS_POINTS, EncodeAccessPointParam(connection_name, ipconfig));
+      access_points->DoModal(WINDOW_DIALOG_ACCESS_POINTS, EncodeAccessPointParam(essid, ipconfig));
       FillInNetworkConnection();
-
-      bool canManage = g_application.getNetworkManager().CanManageConnections();
-//      CGUIButtonControl *pControl = (CGUIButtonControl*)CSettings::Get().GetSetting("network.connection")->GetControl();
-//      pControl->SetEnabled(canManage);
-
-      CLog::Log(LOGDEBUG, "CGUIWindowSettingsCategory::UpdateSettings:network.connection canManage(%d)", canManage);
-      if (canManage)
-      {
-        CStdString connection_name;
-        connection_name = g_application.getNetworkManager().GetDefaultConnectionName();
-        CSettings::Get().SetString("network.connection", connection_name);
-
-        FillInNetworkConnection();
-      }
-      else
-      {
-        // <string id="13296">Connected</string>
-        CSettings::Get().SetString("network.connection", g_localizeStrings.Get(13296));
-      }
-
-//      UpdateSettings();
     }
   }
 }
@@ -1022,11 +980,11 @@ bool CNetworkServices::StopZeroconf()
 
 void CNetworkServices::FillInNetworkConnection()
 {
-  CLog::Log(LOGDEBUG, "CGUIWindowSettingsCategory::FillInNetworkConnection1");
+  CLog::Log(LOGDEBUG, "CNetworkServices::FillInNetworkConnection1");
   if (!CSettings::Get().GetSetting("network.connection"))
     return;
 
-  CLog::Log(LOGDEBUG, "CGUIWindowSettingsCategory::FillInNetworkConnection2");
+  CLog::Log(LOGDEBUG, "CNetworkServices::FillInNetworkConnection2");
   // run the net pump to clear out any stale info,
   // the water gets mighty dirty when the pump
   // only runs every 500ms.
