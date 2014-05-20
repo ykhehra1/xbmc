@@ -92,7 +92,7 @@
       <group id="2">
         <setting id="lookandfeel.enablerssfeeds" type="boolean" label="13305" help="36111">
           <level>1</level>
-          <default>true</default>
+          <default>false</default>
           <control type="toggle" />
         </setting>
         <setting id="lookandfeel.rssedit" type="string" parent="lookandfeel.enablerssfeeds" label="21450" help="36112">
@@ -2469,7 +2469,7 @@
       <group id="2">
         <setting id="audiooutput.guisoundmode" type="integer" label="34120" help="36373">
           <level>0</level>
-          <default>1</default> <!-- AE_SOUND_IDLE -->
+          <default>0</default> <!-- AE_SOUND_IDLE -->
           <constraints>
             <options>
               <option label="34121">1</option> <!-- AE_SOUND_IDLE -->
