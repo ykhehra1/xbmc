@@ -1042,26 +1042,6 @@ void CAdvancedSettings::ParseSettingsFile(const CStdString &file)
     }
   }
 
-  TiXmlElement* pHideSettings = pRootElement->FirstChildElement("hidesettings");
-  if (pHideSettings)
-  {
-    m_settingsHidden.clear();
-    CLog::Log(LOGDEBUG,"Configuring hidden settings");
-    TiXmlNode* pSetting = pHideSettings->FirstChildElement("setting");
-    CStdString hiddenSetting;
-    while (pSetting)
-    {
-      hiddenSetting = pSetting->FirstChild()->Value();
-      if (!hiddenSetting.empty())
-      {
-        CLog::Log(LOGNOTICE,"Hiding:  [%s]", hiddenSetting.c_str());
-        m_settingsHidden.push_back(hiddenSetting);
-      }
-      // get next one
-      pSetting = pSetting->NextSiblingElement("setting");
-    }
-  }
-
   XMLUtils::GetInt(pRootElement, "remotedelay", m_remoteDelay, 1, 20);
   XMLUtils::GetFloat(pRootElement, "controllerdeadzone", m_controllerDeadzone, 0.0f, 1.0f);
   XMLUtils::GetUInt(pRootElement, "fanartres", m_fanartRes, 0, 1080);
