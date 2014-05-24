@@ -2513,7 +2513,7 @@
         </setting>
         <setting id="audiooutput.ac3passthrough" type="boolean" label="364" help="36365">
           <level>2</level>
-          <default>false</default>
+          <default>true</default>
           <dependencies>
             <dependency type="visible" on="property" name="aesettingvisible" setting="audiooutput.config">audiooutput.passthrough</dependency>
             <dependency type="enable" setting="audiooutput.passthrough" operator="is">true</dependency>
