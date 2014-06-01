@@ -261,6 +261,10 @@ bool CNetworkManager::WakeOnLan(const char *mac)
 void CNetworkManager::StartServices()
 {
   CLog::Log(LOGDEBUG, "%s - Starting network services",__FUNCTION__);
+
+  // TODO: fix properly
+  system("/etc/init.d/S49ntp restart");
+
   CNetworkServices::Get().Start();
 }
 
