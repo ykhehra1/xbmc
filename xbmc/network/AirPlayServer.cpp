@@ -20,7 +20,6 @@
  *
  */
 
-#include "network/Network.h"
 #include "AirPlayServer.h"
 
 #ifdef HAS_AIRPLAY
@@ -1050,7 +1049,7 @@ int CAirPlayServer::CTCPClient::ProcessRequest( CStdString& responseHeader,
   else if (uri == "/server-info")
   {
     CLog::Log(LOGDEBUG, "AIRPLAY: got request %s", uri.c_str());
-    responseBody = StringUtils::Format(SERVER_INFO, g_application.getNetwork().GetFirstConnectedInterface()->GetMacAddress().c_str());
+    responseBody = StringUtils::Format(SERVER_INFO, g_application.getNetworkManager().GetDefaultConnectionMacAddress());
     responseHeader = "Content-Type: text/x-apple-plist+xml\r\n";
   }
 

@@ -79,6 +79,8 @@ SRCS += ActorProtocol.cpp
 ifeq (@USE_OPENGLES@,1)
 SRCS += AMLUtils.cpp
 endif
+SRCS += XMLVariantParser.cpp
+SRCS += XMLVariantWriter.cpp
 
 LIB   = utils.a
 

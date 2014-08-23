@@ -18,6 +18,7 @@
  *
  */
 
+#include "Application.h"
 #include "GUIWindowSettingsCategory.h"
 #include "GUIUserMessages.h"
 #include "dialogs/GUIDialogKaiToast.h"
@@ -633,6 +634,26 @@ void CGUIWindowSettingsCategory::UpdateSettings()
     CGUIControl *pControl = pSettingControl->GetControl();
     if (pSetting == NULL || pControl == NULL)
       continue;
+      
+    if (pSetting->GetId() == "network.connection")
+    {
+      bool canManage = g_application.getNetworkManager().CanManageConnections();
+      CGUIButtonControl *pControlButton = (CGUIButtonControl*)pControl;
+      pControl->SetEnabled(canManage);
+
+      CLog::Log(LOGDEBUG, "CGUIWindowSettingsCategory::UpdateSettings:network.connection canManage(%d)", canManage);
+      if (canManage)
+      {
+        CStdString connection_name;
+        connection_name = g_application.getNetworkManager().GetDefaultConnectionName();
+        pControlButton->SetLabel2(connection_name);
+      }
+      else
+      {
+        // <string id="13296">Connected</string>
+        pControlButton->SetLabel2(g_localizeStrings.Get(13296));
+      }
+    }
 
     pSettingControl->Update();
   }

@@ -92,7 +92,7 @@
       <group id="2">
         <setting id="lookandfeel.enablerssfeeds" type="boolean" label="13305" help="36111">
           <level>1</level>
-          <default>true</default>
+          <default>false</default>
           <control type="toggle" />
         </setting>
         <setting id="lookandfeel.rssedit" type="string" parent="lookandfeel.enablerssfeeds" label="21450" help="36112">
@@ -2469,7 +2469,7 @@
       <group id="2">
         <setting id="audiooutput.guisoundmode" type="integer" label="34120" help="36373">
           <level>0</level>
-          <default>1</default> <!-- AE_SOUND_IDLE -->
+          <default>0</default> <!-- AE_SOUND_IDLE -->
           <constraints>
             <options>
               <option label="34121">1</option> <!-- AE_SOUND_IDLE -->
@@ -2605,7 +2605,7 @@
       <group id="2">
         <setting id="input.remoteaskeyboard" type="boolean" label="21449" help="36376">
           <level>1</level>
-          <default>false</default>
+          <default>true</default>
           <control type="toggle" />
         </setting>
         <setting id="input.enablemouse" type="boolean" label="21369" help="36377">
@@ -2632,6 +2632,75 @@
     </category>
     <category id="network" label="798" help="36379">
       <group id="1">
+        <setting id="network.connection" type="action" label="714">
+          <level>1</level>
+          <control type="button" format="action" />
+        </setting>
+        <setting id="network.method" type="integer" parent="network.connection" label="715">
+          <level>1</level>
+          <default>0</default>
+          <constraints>
+            <options>
+              <option label="716">0</option> <!-- DHCP -->
+              <option label="717">1</option> <!-- STATIC -->
+            </options>
+          </constraints>
+          <control type="spinner" format="integer" />
+        </setting>
+        <setting id="network.address" type="string" parent="network.connection" label="719">
+          <level>1</level>
+          <default>0.0.0.0</default>
+          <dependencies>
+            <dependency type="enable" setting="network.method" operator="!is">0</dependency>
+          </dependencies>
+          <control type="edit" format="ip" />
+        </setting>
+        <setting id="network.netmask" type="string" parent="network.connection" label="720">
+          <level>1</level>
+          <default>255.255.255.0</default>
+          <dependencies>
+            <dependency type="enable" setting="network.method" operator="!is">0</dependency>
+          </dependencies>
+          <control type="edit" format="ip" />
+        </setting>
+        <setting id="network.gateway" type="string" parent="network.connection" label="721">
+          <level>1</level>
+          <default>0.0.0.0</default>
+          <dependencies>
+            <dependency type="enable" setting="network.method" operator="!is">0</dependency>
+          </dependencies>
+          <control type="edit" format="ip" />
+        </setting>
+        <setting id="network.nameserver" type="string" parent="network.connection" label="722">
+          <level>1</level>
+          <default>0.0.0.0</default>
+          <dependencies>
+            <dependency type="enable" setting="network.method" operator="!is">0</dependency>
+          </dependencies>
+          <control type="edit" format="ip" />
+        </setting>
+        <setting id="network.apply" type="action" label="779">
+          <level>1</level>
+          <control type="button" format="action" />
+        </setting>
+        <setting id="network.essid" type="string" label="776">
+          <visible>false</visible>
+          <level>1</level>
+          <default></default>
+          <constraints>
+            <allowempty>true</allowempty>
+          </constraints>
+          <control type="edit" format="string" />
+        </setting>
+        <setting id="network.passphrase" type="string" label="777">
+          <visible>false</visible>
+          <level>1</level>
+          <default></default>
+          <constraints>
+            <allowempty>true</allowempty>
+          </constraints>
+          <control type="edit" format="string" />
+        </setting>
         <setting id="network.usehttpproxy" type="boolean" label="708" help="36380">
           <level>2</level>
           <default>false</default>

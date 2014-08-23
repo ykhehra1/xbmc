@@ -24,7 +24,6 @@
 #include <arpa/inet.h>
 
 #include "system.h"
-#include "network/Network.h"
 #include "Application.h"
 #include "DNSNameCache.h"
 #include "dialogs/GUIDialogProgress.h"
@@ -106,14 +105,14 @@ bool CMACDiscoveryJob::DoWork()
     CLog::Log(LOGERROR, "%s - can't determine ip of '%s'", __FUNCTION__, m_host.c_str());
     return false;
   }
-
-  vector<CNetworkInterface*>& ifaces = g_application.getNetwork().GetInterfaceList();
+/*
+  return g_application.getNetworkManager().GetInterfaceList();
   for (vector<CNetworkInterface*>::const_iterator it = ifaces.begin(); it != ifaces.end(); ++it)
   {
     if ((*it)->GetHostMacAddress(ipAddress, m_macAddres))
       return true;
   }
-
+*/
   return false;
 }
 
@@ -243,7 +242,7 @@ public:
   virtual bool SuccessWaiting () const
   {
     unsigned long address = ntohl(HostToIP(m_host));
-    bool online = g_application.getNetwork().HasInterfaceForIP(address);
+    bool online = g_application.getNetworkManager().IsAvailable();
 
     if (!online) // setup endtime so we dont return true until network is consistently connected
       m_end.Set (m_settle_time_ms);
@@ -286,7 +285,7 @@ public:
   {
     ULONG dst_ip = HostToIP(server.host);
 
-    return g_application.getNetwork().PingHost(dst_ip, server.ping_port, 2000, server.ping_mode & 1);
+    return true;
   }
 
 private:
@@ -383,7 +382,7 @@ bool CWakeOnAccess::WakeUpHost(const WakeUpEntry& server)
       return false; // timedout or canceled
     }
   }
-
+/*
   {
     ULONG dst_ip = HostToIP(server.host);
 
@@ -393,8 +392,8 @@ bool CWakeOnAccess::WakeUpHost(const WakeUpEntry& server)
       return true;
     }
   }
-
-  if (!g_application.getNetwork().WakeOnLan(server.mac.c_str()))
+*/
+  if (!g_application.getNetworkManager().WakeOnLan(server.mac.c_str()))
   {
     CLog::Log(LOGERROR,"WakeOnAccess failed to send. (Is it blocked by firewall?)");
 

@@ -95,6 +95,8 @@ AEDeviceType CActiveAESink::GetDeviceType(const std::string &device)
 
 bool CActiveAESink::HasPassthroughDevice()
 {
+  // TODO
+  return true;
   for (AESinkInfoList::iterator itt = m_sinkInfoList.begin(); itt != m_sinkInfoList.end(); ++itt)
   {
     for (AEDeviceInfoList::iterator itt2 = itt->m_deviceInfoList.begin(); itt2 != itt->m_deviceInfoList.end(); ++itt2)
@@ -109,6 +111,8 @@ bool CActiveAESink::HasPassthroughDevice()
 
 bool CActiveAESink::SupportsFormat(const std::string &device, AEDataFormat format, int samplerate)
 {
+  // TODO
+  return true;
   std::string dev = device;
   std::string dri;
   CAESinkFactory::ParseDevice(dev, dri);

@@ -30,7 +30,6 @@
 #endif
 #include "GUIInfoManager.h"
 #include "filesystem/CurlFile.h"
-#include "network/Network.h"
 #include "Application.h"
 #include "windowing/WindowingFactory.h"
 #include "guilib/LocalizeStrings.h"
@@ -104,12 +103,7 @@ CSysData::INTERNET_STATE CSysInfoJob::GetInternetState()
 
 CStdString CSysInfoJob::GetMACAddress()
 {
-#if defined(HAS_LINUX_NETWORK) || defined(HAS_WIN32_NETWORK)
-  CNetworkInterface* iface = g_application.getNetwork().GetFirstConnectedInterface();
-  if (iface)
-    return iface->GetMacAddress();
-#endif
-  return "";
+  return g_application.getNetworkManager().GetDefaultConnectionMacAddress().c_str();
 }
 
 CStdString CSysInfoJob::GetVideoEncoder()
