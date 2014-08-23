@@ -752,7 +752,7 @@ bool CApplication::Create()
 
   CStdString executable = CUtil::ResolveExecutablePath();
   CLog::Log(LOGNOTICE, "The executable running is: %s", executable.c_str());
-  CLog::Log(LOGNOTICE, "Local hostname: %s", m_network->GetHostName().c_str());
+  CLog::Log(LOGNOTICE, "Local hostname: %s", m_network.GetDefaultConnectionName().c_str());
   CLog::Log(LOGNOTICE, "Log File is located: %sxbmc.log", g_advancedSettings.m_logFolder.c_str());
   CRegExp::LogCheckUtf8Support();
   CLog::Log(LOGNOTICE, "-----------------------------------------------------------------------");
