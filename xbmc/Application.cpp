@@ -18,7 +18,6 @@
  *
  */
 
-#include "network/Network.h"
 #include "threads/SystemClock.h"
 #include "system.h"
 #include "Application.h"
@@ -245,9 +244,7 @@
 #include "pictures/GUIDialogPictureInfo.h"
 #include "addons/GUIDialogAddonSettings.h"
 #include "addons/GUIDialogAddonInfo.h"
-#ifdef HAS_LINUX_NETWORK
 #include "network/GUIDialogAccessPoints.h"
-#endif
 
 /* PVR related include Files */
 #include "pvr/PVRManager.h"
@@ -388,7 +385,6 @@ CApplication::CApplication(void)
   , m_seekHandler(new CSeekHandler)
   , m_playerController(new CPlayerController)
 {
-  m_network = NULL;
   TiXmlBase::SetCondenseWhiteSpace(false);
   m_bInhibitIdleShutdown = false;
   m_bScreenSave = false;
@@ -632,14 +628,6 @@ void CApplication::Preflight()
 
 bool CApplication::Create()
 {
-#if defined(HAS_LINUX_NETWORK)
-  m_network = new CNetworkLinux();
-#elif defined(HAS_WIN32_NETWORK)
-  m_network = new CNetworkWin32();
-#else
-  m_network = new CNetwork();
-#endif
-
   Preflight();
 
   for (int i = RES_HDTV_1080i; i <= RES_PAL60_16x9; i++)
@@ -856,6 +844,8 @@ bool CApplication::Create()
   m_replayGainSettings.iPreAmp = CSettings::Get().GetInt("musicplayer.replaygainpreamp");
   m_replayGainSettings.iNoGainPreAmp = CSettings::Get().GetInt("musicplayer.replaygainnogainpreamp");
   m_replayGainSettings.bAvoidClipping = CSettings::Get().GetBool("musicplayer.replaygainavoidclipping");
+
+  m_network.Initialize();
 
   // initialize the addon database (must be before the addon manager is init'd)
   CDatabaseManager::Get().Initialize(true);
@@ -1390,9 +1380,7 @@ bool CApplication::Initialize()
     g_windowManager.Add(new CGUIDialogPictureInfo);
     g_windowManager.Add(new CGUIDialogAddonInfo);
     g_windowManager.Add(new CGUIDialogAddonSettings);
-#ifdef HAS_LINUX_NETWORK
     g_windowManager.Add(new CGUIDialogAccessPoints);
-#endif
 
     g_windowManager.Add(new CGUIDialogLockSettings);
 
@@ -1522,6 +1510,7 @@ bool CApplication::Initialize()
 
   // reset our screensaver (starts timers etc.)
   ResetScreenSaver();
+  m_keyringManager.Initialize();
 
 #ifdef HAS_SDL_JOYSTICK
   g_Joystick.SetEnabled(CSettings::Get().GetBool("input.enablejoystick") &&
@@ -1606,8 +1595,6 @@ void CApplication::StartServices()
 
 void CApplication::StopServices()
 {
-  m_network->NetworkMessage(CNetwork::SERVICES_DOWN, 0);
-
 #if !defined(TARGET_WINDOWS) && defined(HAS_DVD_DRIVE)
   CLog::Log(LOGNOTICE, "stop dvd detect media");
   m_DetectDVDType.StopThread();
@@ -3492,9 +3479,6 @@ bool CApplication::Cleanup()
     while(1); // execution ends
 #endif
 
-    delete m_network;
-    m_network = NULL;
-
     return true;
   }
   catch (...)
@@ -3603,6 +3587,8 @@ void CApplication::Stop(int exitCode)
     // not before some windows still need it when deinitializing during skin
     // unloading
     CScriptInvocationManager::Get().Uninitialize();
+
+    m_network.StopServices();
 
     g_Windowing.DestroyRenderSystem();
     g_Windowing.DestroyWindow();
@@ -5076,6 +5062,7 @@ void CApplication::Process()
 void CApplication::ProcessSlow()
 {
   g_powerManager.ProcessEvents();
+  m_network.PumpNetworkEvents();
 
 #if defined(TARGET_DARWIN_OSX)
   // There is an issue on OS X that several system services ask the cursor to become visible
@@ -5797,9 +5784,14 @@ void CApplication::SetRenderGUI(bool renderGUI)
   m_renderGUI = renderGUI;
 }
 
-CNetwork& CApplication::getNetwork()
+CNetworkManager& CApplication::getNetworkManager()
 {
-  return *m_network;
+  return m_network;
+}
+
+CKeyringManager& CApplication::getKeyringManager()
+{
+  return m_keyringManager;
 }
 #ifdef HAS_PERFORMANCE_SAMPLE
 CPerformanceStats &CApplication::GetPerformanceStats()

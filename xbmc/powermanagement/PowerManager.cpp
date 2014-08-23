@@ -47,6 +47,7 @@
 #include "linux/ConsoleDeviceKitPowerSyscall.h"
 #include "linux/LogindUPowerSyscall.h"
 #include "linux/UPowerSyscall.h"
+#include "linux/AMLPowerSyscall.h"
 #if defined(HAS_HAL)
 #include "linux/HALPowerSyscall.h"
 #endif // HAS_HAL
@@ -86,6 +87,8 @@ void CPowerManager::Initialize()
     m_instance = new CLogindUPowerSyscall();
   else if (CUPowerSyscall::HasUPower())
     m_instance = new CUPowerSyscall();
+  else if (CAMLPowerSyscall::HasAMLPowerSyscall())
+    m_instance = new CAMLPowerSyscall();
 #if defined(HAS_HAL)
   else if(1)
     m_instance = new CHALPowerSyscall();

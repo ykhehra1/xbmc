@@ -26,7 +26,7 @@
 #include "dialogs/GUIDialogContextMenu.h"
 #include "dialogs/GUIDialogSelect.h"
 #include "profiles/dialogs/GUIDialogProfileSettings.h"
-#include "network/Network.h"
+#include "network/NetworkManager.h"
 #include "utils/URIUtils.h"
 #include "utils/Weather.h"
 #include "GUIPassword.h"
@@ -82,7 +82,7 @@ void CGUIWindowSettingsProfile::OnPopupMenu(int iItem)
     g_application.StopPlaying();
     CGUIMessage msg2(GUI_MSG_ITEM_SELECTED, g_windowManager.GetActiveWindow(), iCtrlID);
     g_windowManager.SendMessage(msg2);
-    g_application.getNetwork().NetworkMessage(CNetwork::SERVICES_DOWN,1);
+    g_application.getNetworkManager().NetworkMessage(CNetworkManager::SERVICES_DOWN,1);
     CProfilesManager::Get().LoadMasterProfileForLogin();
     CGUIWindowLoginScreen::LoadProfile(iItem);
     return;

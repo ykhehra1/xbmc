@@ -5,7 +5,6 @@ SRCS  = cddb.cpp \
         EventServer.cpp \
         GUIDialogAccessPoints.cpp \
         GUIDialogNetworkSetup.cpp \
-        Network.cpp \
         NetworkServices.cpp \
         Socket.cpp \
         TCPServer.cpp \
@@ -14,6 +13,10 @@ SRCS  = cddb.cpp \
         WebServer.cpp \
         ZeroconfBrowser.cpp \
         Zeroconf.cpp \
+        NetworkManager.cpp \
+        NetworkUtils.cpp \
+        NullNetworkManager.cpp \
+        ConnectionJob.cpp \        
 
 ifeq (@USE_AIRPLAY@, 1)
 SRCS += AirPlayServer.cpp
